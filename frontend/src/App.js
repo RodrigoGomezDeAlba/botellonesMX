@@ -5,11 +5,13 @@ import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminProducts from './pages/AdminProducts';
+import ProductForm from './pages/ProductForm';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
-// Componente para rutas protegidas
-const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+    const { isAuthenticated, loading, user } = useAuth();
     
     if (loading) {
         return <div>Cargando...</div>;
@@ -17,6 +19,10 @@ const ProtectedRoute = ({ children }) => {
     
     if (!isAuthenticated) {
         return <Navigate to="/login" />;
+    }
+    
+    if (adminOnly && user?.role !== 'admin') {
+        return <Navigate to="/" />;
     }
     
     return children;
@@ -32,6 +38,12 @@ function AppContent() {
                 <div className="nav-links">
                     <Link to="/">Inicio</Link>
                     <Link to="/catalog">Catálogo</Link>
+                    {user?.role === 'admin' && (
+                        <>
+                            <Link to="/admin">Dashboard</Link>
+                            <Link to="/admin/products">Productos</Link>
+                        </>
+                    )}
                     {isAuthenticated ? (
                         <>
                             <span className="user-name">Hola, {user?.name}</span>
@@ -51,6 +63,26 @@ function AppContent() {
                 <Route path="/catalog" element={<Catalog />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/admin" element={
+                    <ProtectedRoute adminOnly>
+                        <AdminDashboard />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/products" element={
+                    <ProtectedRoute adminOnly>
+                        <AdminProducts />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/products/new" element={
+                    <ProtectedRoute adminOnly>
+                        <ProductForm />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/products/edit/:id" element={
+                    <ProtectedRoute adminOnly>
+                        <ProductForm />
+                    </ProtectedRoute>
+                } />
             </Routes>
         </div>
     );
