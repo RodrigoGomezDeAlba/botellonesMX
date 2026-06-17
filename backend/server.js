@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const pool = require('./src/config/database');
+const authRoutes = require('./src/routes/authRoutes');
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ app.get('/', (req, res) => {
 app.get('/api/test', (req, res) => {
     res.json({ message: 'Backend funcionando correctamente' });
 });
+
+app.use('/api/auth', authRoutes);
 
 app.get('/api/db-test', async (req, res) => {
     try {
