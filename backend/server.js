@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const pool = require('./src/config/database');
 const authRoutes = require('./src/routes/authRoutes');
+const productRoutes = require('./src/routes/productRoutes');
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
 
 dotenv.config();
 
@@ -16,11 +18,9 @@ app.get('/', (req, res) => {
     res.send('Servidor funcionando correctamente');
 });
 
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'Backend funcionando correctamente' });
-});
-
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/api/db-test', async (req, res) => {
     try {
@@ -34,20 +34,6 @@ app.get('/api/db-test', async (req, res) => {
             message: 'Error de conexion a MySQL',
             error: error.message
         });
-    }
-});
-
-app.get('/api/products', async (req, res) => {
-    try {
-        const [rows] = await pool.query(`
-            SELECT p.*, c.name AS category_name 
-            FROM products p
-            LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.is_active = 1
-        `);
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al obtener productos', error: error.message });
     }
 });
 
