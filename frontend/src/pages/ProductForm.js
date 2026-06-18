@@ -16,9 +16,10 @@ function ProductForm() {
         image_url: '',
         category_id: ''
     });
+    const [errors, setErrors] = useState({});
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [generalError, setGeneralError] = useState(null);
 
     useEffect(() => {
         loadCategories();
@@ -32,7 +33,7 @@ function ProductForm() {
             const response = await api.get('/categories');
             setCategories(response.data);
         } catch (err) {
-            setError('Error al cargar categorías');
+            setGeneralError('Error al cargar categorías');
         }
     };
 
@@ -48,8 +49,37 @@ function ProductForm() {
                 category_id: product.category_id || ''
             });
         } catch (err) {
-            setError('Error al cargar el producto');
+            setGeneralError('Error al cargar el producto');
         }
+    };
+
+    const validate = () => {
+        const newErrors = {};
+        
+        if (!formData.name.trim()) {
+            newErrors.name = 'El nombre es requerido';
+        } else if (formData.name.trim().length < 3) {
+            newErrors.name = 'El nombre debe tener al menos 3 caracteres';
+        }
+        
+        if (!formData.price) {
+            newErrors.price = 'El precio es requerido';
+        } else if (isNaN(formData.price) || parseFloat(formData.price) <= 0) {
+            newErrors.price = 'El precio debe ser un número mayor a 0';
+        }
+        
+        if (!formData.stock) {
+            newErrors.stock = 'El stock es requerido';
+        } else if (!Number.isInteger(Number(formData.stock)) || parseInt(formData.stock) < 0) {
+            newErrors.stock = 'El stock debe ser un número entero mayor o igual a 0';
+        }
+        
+        if (formData.image_url && !/^https?:\/\/.+/.test(formData.image_url) && !formData.image_url.startsWith('/')) {
+            newErrors.image_url = 'URL de imagen inválida';
+        }
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleChange = (e) => {
@@ -57,12 +87,23 @@ function ProductForm() {
             ...formData,
             [e.target.name]: e.target.value
         });
+        if (errors[e.target.name]) {
+            setErrors({
+                ...errors,
+                [e.target.name]: ''
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setGeneralError(null);
+        
+        if (!validate()) {
+            return;
+        }
+
         setLoading(true);
-        setError(null);
 
         try {
             const data = {
@@ -78,7 +119,7 @@ function ProductForm() {
             }
             navigate('/admin/products');
         } catch (err) {
-            setError(err.response?.data?.message || 'Error al guardar el producto');
+            setGeneralError(err.response?.data?.message || 'Error al guardar el producto');
         } finally {
             setLoading(false);
         }
@@ -87,7 +128,7 @@ function ProductForm() {
     return (
         <div className="form-container">
             <h2>{isEdit ? 'Editar Producto' : 'Nuevo Producto'}</h2>
-            {error && <div className="error-message">{error}</div>}
+            {generalError && <div className="error-message">{generalError}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Nombre</label>
@@ -96,8 +137,9 @@ function ProductForm() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        required
+                        className={errors.name ? 'input-error' : ''}
                     />
+                    {errors.name && <span className="field-error">{errors.name}</span>}
                 </div>
 
                 <div className="form-group">
@@ -119,8 +161,9 @@ function ProductForm() {
                         onChange={handleChange}
                         step="0.01"
                         min="0"
-                        required
+                        className={errors.price ? 'input-error' : ''}
                     />
+                    {errors.price && <span className="field-error">{errors.price}</span>}
                 </div>
 
                 <div className="form-group">
@@ -131,8 +174,9 @@ function ProductForm() {
                         value={formData.stock}
                         onChange={handleChange}
                         min="0"
-                        required
+                        className={errors.stock ? 'input-error' : ''}
                     />
+                    {errors.stock && <span className="field-error">{errors.stock}</span>}
                 </div>
 
                 <div className="form-group">
@@ -142,8 +186,10 @@ function ProductForm() {
                         name="image_url"
                         value={formData.image_url}
                         onChange={handleChange}
-                        placeholder="ej: /images/producto.jpg"
+                        placeholder="ej: https://imagen.com/producto.jpg"
+                        className={errors.image_url ? 'input-error' : ''}
                     />
+                    {errors.image_url && <span className="field-error">{errors.image_url}</span>}
                 </div>
 
                 <div className="form-group">

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 
 const CartContext = createContext();
 
@@ -50,13 +50,15 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
-    const getTotal = () => {
-        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    };
+    // useMemo para calcular el total
+    const total = useMemo(() => {
+        return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }, [cartItems]);
 
-    const getItemCount = () => {
+    // useMemo para contar items
+    const itemCount = useMemo(() => {
         return cartItems.reduce((count, item) => count + item.quantity, 0);
-    };
+    }, [cartItems]);
 
     const value = {
         cartItems,
@@ -64,8 +66,10 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateQuantity,
         clearCart,
-        getTotal,
-        getItemCount
+        total,
+        itemCount,
+        getTotal: () => total,
+        getItemCount: () => itemCount
     };
 
     return (

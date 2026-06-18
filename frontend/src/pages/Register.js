@@ -10,28 +10,73 @@ function Register() {
         phone: '',
         address: ''
     });
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [generalError, setGeneralError] = useState('');
     const { register } = useAuth();
     const navigate = useNavigate();
+
+    const validate = () => {
+        const newErrors = {};
+        
+        if (!formData.name.trim()) {
+            newErrors.name = 'El nombre es requerido';
+        } else if (formData.name.trim().length < 2) {
+            newErrors.name = 'El nombre debe tener al menos 2 caracteres';
+        }
+        
+        if (!formData.email) {
+            newErrors.email = 'El email es requerido';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = 'Email inválido';
+        }
+        
+        if (!formData.password) {
+            newErrors.password = 'La contraseña es requerida';
+        } else if (formData.password.length < 6) {
+            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+        } else if (!/[A-Z]/.test(formData.password)) {
+            newErrors.password = 'La contraseña debe tener al menos una mayúscula';
+        } else if (!/[0-9]/.test(formData.password)) {
+            newErrors.password = 'La contraseña debe tener al menos un número';
+        }
+        
+        if (formData.phone && !/^[0-9]{10}$/.test(formData.phone.replace(/\s/g, ''))) {
+            newErrors.phone = 'Teléfono inválido (debe tener 10 dígitos)';
+        }
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
+        if (errors[e.target.name]) {
+            setErrors({
+                ...errors,
+                [e.target.name]: ''
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        setGeneralError('');
+        
+        if (!validate()) {
+            return;
+        }
+
         setLoading(true);
 
         const result = await register(formData);
         if (result.success) {
             navigate('/catalog');
         } else {
-            setError(result.error || 'Error al registrarse');
+            setGeneralError(result.error || 'Error al registrarse');
         }
         setLoading(false);
     };
@@ -39,7 +84,7 @@ function Register() {
     return (
         <div className="auth-container">
             <h2>Registro de Usuario</h2>
-            {error && <div className="error-message">{error}</div>}
+            {generalError && <div className="error-message">{generalError}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Nombre</label>
@@ -48,8 +93,9 @@ function Register() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        required
+                        className={errors.name ? 'input-error' : ''}
                     />
+                    {errors.name && <span className="field-error">{errors.name}</span>}
                 </div>
                 <div className="form-group">
                     <label>Email</label>
@@ -58,28 +104,31 @@ function Register() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        required
+                        className={errors.email ? 'input-error' : ''}
                     />
+                    {errors.email && <span className="field-error">{errors.email}</span>}
                 </div>
                 <div className="form-group">
-                    <label>Contraseña (mínimo 6 caracteres)</label>
+                    <label>Contraseña (mínimo 6 caracteres, mayúscula y número)</label>
                     <input
                         type="password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        required
-                        minLength="6"
+                        className={errors.password ? 'input-error' : ''}
                     />
+                    {errors.password && <span className="field-error">{errors.password}</span>}
                 </div>
                 <div className="form-group">
-                    <label>Teléfono</label>
+                    <label>Teléfono (10 dígitos)</label>
                     <input
                         type="text"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        className={errors.phone ? 'input-error' : ''}
                     />
+                    {errors.phone && <span className="field-error">{errors.phone}</span>}
                 </div>
                 <div className="form-group">
                     <label>Dirección</label>
