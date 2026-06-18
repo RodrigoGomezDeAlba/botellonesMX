@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
+import api from '../services/api';
 
 function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -30,8 +31,8 @@ function Catalog() {
                 setProducts(productsData);
                 
                 // Cargar categorías
-                const categoriesResponse = await fetch('http://localhost:5000/api/categories');
-                const categoriesData = await categoriesResponse.json();
+                const categoriesResponse = await api.get('/categories');
+                const categoriesData = categoriesResponse.data;
                 setCategories(categoriesData);
                 
                 // Aplicar filtros

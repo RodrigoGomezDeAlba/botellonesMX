@@ -52,6 +52,10 @@ app.use('/api/orders', orderRoutes);
 
 app.use('/api/users', userRoutes);
 
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'API funcionando correctamente' });
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
