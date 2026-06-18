@@ -530,3 +530,268 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.cart-link {
+    position: relative;
+}
+
+.btn-add-cart {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-add-cart:hover {
+    background: #219a52;
+}
+
+.btn-add-cart:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+.cart-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.cart-container h2 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+.empty-cart {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 40px 0;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cart-item-info h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.cart-item-price {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.cart-item-category {
+    color: #7f8c8d;
+    font-size: 12px;
+}
+
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quantity-control button {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.quantity-control button:hover {
+    background: #e0e0e0;
+}
+
+.quantity-control span {
+    min-width: 30px;
+    text-align: center;
+}
+
+.btn-remove {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-remove:hover {
+    background: #c0392b;
+}
+
+.cart-summary {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cart-total {
+    text-align: right;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.cart-total h3 {
+    color: #2c3e50;
+}
+
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.checkout-form .form-group {
+    margin-bottom: 0;
+}
+
+.btn-checkout {
+    padding: 12px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-checkout:hover {
+    background: #219a52;
+}
+
+.btn-checkout:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+.login-prompt {
+    text-align: center;
+    padding: 20px;
+}
+
+.login-prompt p {
+    margin-bottom: 15px;
+    color: #7f8c8d;
+}
+
+.success-message {
+    background: #d4edda;
+    color: #155724;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.orders-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.orders-container h2 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+.order-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.order-id {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.order-date {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.order-status {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.order-status.pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.order-status.pagado {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.order-status.enviado {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.order-status.entregado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.order-status.cancelado {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.order-details p {
+    margin: 5px 0;
+    color: #4a5568;
+}
+
+.empty-orders {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 40px 0;
+}
