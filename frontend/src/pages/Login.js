@@ -3,23 +3,64 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [generalError, setGeneralError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    const validate = () => {
+        const newErrors = {};
+        
+        if (!formData.email) {
+            newErrors.email = 'El email es requerido';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = 'Email inválido';
+        }
+        
+        if (!formData.password) {
+            newErrors.password = 'La contraseña es requerida';
+        } else if (formData.password.length < 6) {
+            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+        }
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        // Limpiar error del campo cuando el usuario escribe
+        if (errors[e.target.name]) {
+            setErrors({
+                ...errors,
+                [e.target.name]: ''
+            });
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        setGeneralError('');
+        
+        if (!validate()) {
+            return;
+        }
+
         setLoading(true);
 
-        const result = await login(email, password);
+        const result = await login(formData.email, formData.password);
         if (result.success) {
             navigate('/catalog');
         } else {
-            setError(result.error || 'Error al iniciar sesión');
+            setGeneralError(result.error || 'Error al iniciar sesión');
         }
         setLoading(false);
     };
@@ -27,25 +68,29 @@ function Login() {
     return (
         <div className="auth-container">
             <h2>Iniciar Sesión</h2>
-            {error && <div className="error-message">{error}</div>}
+            {generalError && <div className="error-message">{generalError}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Email</label>
                     <input
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={errors.email ? 'input-error' : ''}
                     />
+                    {errors.email && <span className="field-error">{errors.email}</span>}
                 </div>
                 <div className="form-group">
                     <label>Contraseña</label>
                     <input
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className={errors.password ? 'input-error' : ''}
                     />
+                    {errors.password && <span className="field-error">{errors.password}</span>}
                 </div>
                 <button type="submit" disabled={loading}>
                     {loading ? 'Cargando...' : 'Iniciar Sesión'}

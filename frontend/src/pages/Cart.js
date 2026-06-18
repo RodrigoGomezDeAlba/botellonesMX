@@ -13,6 +13,7 @@ function Cart() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [addressError, setAddressError] = useState('');
 
     const handleCheckout = async () => {
         if (!isAuthenticated) {
@@ -20,9 +21,15 @@ function Cart() {
             return;
         }
 
-        if (!shippingAddress) {
-            setError('La dirección de envío es requerida');
+        // Validar dirección
+        if (!shippingAddress.trim()) {
+            setAddressError('La dirección de envío es requerida');
             return;
+        } else if (shippingAddress.trim().length < 5) {
+            setAddressError('La dirección debe tener al menos 5 caracteres');
+            return;
+        } else {
+            setAddressError('');
         }
 
         setLoading(true);
@@ -34,10 +41,10 @@ function Cart() {
                 quantity: item.quantity
             }));
 
-            const response = await api.post('/orders', {
+            await api.post('/orders', {
                 items,
-                shipping_address: shippingAddress,
-                payment_method: paymentMethod || 'No especificado'
+                shipping_address: shippingAddress.trim(),
+                payment_method: paymentMethod.trim() || 'No especificado'
             });
 
             setSuccess(true);
@@ -107,7 +114,9 @@ function Cart() {
                                 onChange={(e) => setShippingAddress(e.target.value)}
                                 rows="3"
                                 required
+                                className={addressError ? 'input-error' : ''}
                             />
+                            {addressError && <span className="field-error">{addressError}</span>}
                         </div>
                         <div className="form-group">
                             <label>Método de Pago</label>
