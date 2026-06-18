@@ -5,6 +5,7 @@ const pool = require('./src/config/database');
 const authRoutes = require('./src/routes/authRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
+const orderRoutes = require('./src/routes/orderRoutes');
 
 dotenv.config();
 
@@ -45,6 +46,8 @@ app.get('/api/categories', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener categorias', error: error.message });
     }
 });
+
+app.use('/api/orders', orderRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

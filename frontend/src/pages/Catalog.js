@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getProducts } from '../services/productService';
+import { useCart } from '../context/CartContext';
 
 function Catalog() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -20,6 +22,11 @@ function Catalog() {
 
         fetchProducts();
     }, []);
+
+    const handleAddToCart = (product) => {
+        addToCart(product);
+        alert('Producto agregado al carrito');
+    };
 
     if (loading) {
         return <div className="loading">Cargando productos...</div>;
@@ -40,6 +47,13 @@ function Catalog() {
                         <p className="price">${product.price}</p>
                         <p className="stock">Stock: {product.stock}</p>
                         <span className="category">{product.category_name || 'Sin categoría'}</span>
+                        <button 
+                            className="btn-add-cart"
+                            onClick={() => handleAddToCart(product)}
+                            disabled={product.stock === 0}
+                        >
+                            {product.stock === 0 ? 'Agotado' : 'Agregar al Carrito'}
+                        </button>
                     </div>
                 ))}
             </div>
