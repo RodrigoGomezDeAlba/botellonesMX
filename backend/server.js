@@ -6,6 +6,7 @@ const authRoutes = require('./src/routes/authRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
+const userRoutes = require('./src/routes/userRoutes');
 
 dotenv.config();
 
@@ -48,6 +49,8 @@ app.get('/api/categories', async (req, res) => {
 });
 
 app.use('/api/orders', orderRoutes);
+
+app.use('/api/users', userRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
