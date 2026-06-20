@@ -1660,7 +1660,7 @@ h2,
     object-fit: contain;
     padding: 12px;
     display: block;
-    background: linear-gradient(180deg, #fff7f9, var(--wine-100));
+    background: #ffffff;
 }
 
 .product-card:hover {
@@ -1715,7 +1715,7 @@ h2,
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 24px;
-    background: linear-gradient(180deg, #fff7f9, var(--wine-100));
+    background: #ffffff;
 }
 
 .footer {
