@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProductById } from '../services/productService';
 import { useCart } from '../context/CartContext';
+import { getProductImage } from '../utils/productImages';
 
 function ProductDetail() {
     const { id } = useParams();
@@ -43,13 +44,15 @@ function ProductDetail() {
     if (error) return <div className="error-message">{error}</div>;
     if (!product) return <div className="error-message">Producto no encontrado</div>;
 
+    const productImage = getProductImage(product);
+
     return (
         <div className="product-detail">
             <Link to="/catalog" className="back-link">← Volver al catálogo</Link>
             <div className="product-detail-card">
-                {product.image_url && (
+                {productImage && (
                     <img
-                        src={product.image_url}
+                        src={productImage}
                         alt={product.name}
                         className="product-detail-image"
                     />

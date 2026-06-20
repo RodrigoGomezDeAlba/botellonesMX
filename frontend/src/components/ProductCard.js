@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { getProductImage } from '../utils/productImages';
 
 const ProductCard = React.memo(({ product, onAddToCart }) => {
+    const productImage = getProductImage(product);
+
     return (
         <div className="product-card">
-            {product.image_url && (
+            {productImage && (
                 <img
-                    src={product.image_url}
+                    src={productImage}
                     alt={product.name}
                     className="product-image"
                     loading="lazy"
