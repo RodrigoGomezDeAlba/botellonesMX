@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
+import api from '../services/api';
 
 function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -17,6 +18,29 @@ function Catalog() {
     const categoryFilter = searchParams.get('category') || '';
     const searchFilter = searchParams.get('search') || '';
 
+    const applyFilters = useCallback((productsData, categoriesData) => {
+        let filtered = [...productsData];
+
+        if (categoryFilter) {
+            const category = categoriesData.find(c =>
+                c.name.toLowerCase() === categoryFilter.toLowerCase()
+            );
+            if (category) {
+                filtered = filtered.filter(p => p.category_id === category.id);
+            }
+        }
+
+        if (searchFilter) {
+            const searchLower = searchFilter.toLowerCase();
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchLower) ||
+                product.description?.toLowerCase().includes(searchLower)
+            );
+        }
+
+        setFilteredProducts(filtered);
+    }, [categoryFilter, searchFilter]);
+
     useEffect(() => {
         const abortController = new AbortController();
 
@@ -25,9 +49,10 @@ function Catalog() {
                 setLoading(true);
                 const productsData = await getProducts();
                 setProducts(productsData);
-                const categoriesResponse = await fetch('http://localhost:5000/api/categories');
-                const categoriesData = await categoriesResponse.json();
+                const categoriesResponse = await api.get('/categories');
+                const categoriesData = categoriesResponse.data;
                 setCategories(categoriesData);
+                setFilteredProducts(productsData);
                 setError(null);
             } catch (err) {
                 if (err.name !== 'AbortError') {
@@ -50,29 +75,6 @@ function Catalog() {
             applyFilters(products, categories);
         }
     }, [categoryFilter, searchFilter, products, categories]);
-
-    const applyFilters = (productsData, categoriesData) => {
-        let filtered = [...productsData];
-
-        if (categoryFilter) {
-            const category = categoriesData.find(c => 
-                c.name.toLowerCase() === categoryFilter.toLowerCase()
-            );
-            if (category) {
-                filtered = filtered.filter(p => p.category_id === category.id);
-            }
-        }
-
-        if (searchFilter) {
-            const searchLower = searchFilter.toLowerCase();
-            filtered = filtered.filter(product =>
-                product.name.toLowerCase().includes(searchLower) ||
-                product.description?.toLowerCase().includes(searchLower)
-            );
-        }
-
-        setFilteredProducts(filtered);
-    };
 
     const handleSearch = () => {
         const searchTerm = searchInput.current.value.trim();
