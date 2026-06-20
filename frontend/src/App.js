@@ -1,12 +1,11 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 import Layout from './components/Layout';
 import AdminLayout from './pages/AdminLayout';
 import './App.css';
 
-// Lazy loading para todas las páginas
 const Home = lazy(() => import('./pages/Home'));
 const Catalog = lazy(() => import('./pages/Catalog'));
 const Login = lazy(() => import('./pages/Login'));
@@ -46,7 +45,6 @@ function App() {
                 <CartProvider>
                     <Suspense fallback={<div className="loading">Cargando página...</div>}>
                         <Routes>
-                            {/* Rutas con Layout (children) */}
                             <Route path="/" element={<Layout><Home /></Layout>} />
                             <Route path="/catalog" element={<Layout><Catalog /></Layout>} />
                             <Route path="/login" element={<Layout><Login /></Layout>} />
@@ -60,7 +58,6 @@ function App() {
                                 </ProtectedRoute>
                             } />
 
-                            {/* Rutas anidadas de admin */}
                             <Route path="/admin" element={
                                 <ProtectedRoute adminOnly>
                                     <Layout>

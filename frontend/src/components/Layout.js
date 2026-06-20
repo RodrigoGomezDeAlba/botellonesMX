@@ -6,19 +6,12 @@ import { useCart } from '../context/CartContext';
 function Layout({ children }) {
     const { user, logout, isAuthenticated } = useAuth();
     const { getItemCount } = useCart();
-    const roleLabel = user?.role === 'admin' ? 'Admin' : isAuthenticated ? 'Usuario' : 'Visitante';
 
     return (
         <div className="App">
             <nav className="navbar">
-                <NavLink to="/" className="brand">
-                    <img src="/botellones-logo.png" alt="Logo BotellonesMX" className="brand-logo" />
-                    <span>BotellonesMX</span>
-                </NavLink>
+                <h1>BotellonesMX</h1>
                 <div className="nav-links">
-                    <span className={`session-badge ${user?.role === 'admin' ? 'admin' : isAuthenticated ? 'user' : 'guest'}`}>
-                        {roleLabel}
-                    </span>
                     <NavLink
                         to="/"
                         className={({ isActive }) => (isActive ? 'active-link' : '')}
@@ -48,14 +41,12 @@ function Layout({ children }) {
                     )}
 
                     {user?.role === 'admin' && (
-                        <>
-                            <NavLink
-                                to="/admin"
-                                className={({ isActive }) => (isActive ? 'active-link' : '')}
-                            >
-                                Admin
-                            </NavLink>
-                        </>
+                        <NavLink
+                            to="/admin"
+                            className={({ isActive }) => (isActive ? 'active-link' : '')}
+                        >
+                            Admin
+                        </NavLink>
                     )}
 
                     {isAuthenticated ? (

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
-import api from '../services/api';
 
 function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -15,34 +14,8 @@ function Catalog() {
     const { addToCart } = useCart();
     const searchInput = useRef(null);
 
-    // Obtener parámetros de la URL
     const categoryFilter = searchParams.get('category') || '';
     const searchFilter = searchParams.get('search') || '';
-
-    const applyFilters = useCallback((productsData, categoriesData) => {
-        let filtered = [...productsData];
-
-        // Filtrar por categoría (query param)
-        if (categoryFilter) {
-            const category = categoriesData.find(c =>
-                c.name.toLowerCase() === categoryFilter.toLowerCase()
-            );
-            if (category) {
-                filtered = filtered.filter(p => p.category_id === category.id);
-            }
-        }
-
-        // Filtrar por búsqueda (query param)
-        if (searchFilter) {
-            const searchLower = searchFilter.toLowerCase();
-            filtered = filtered.filter(product =>
-                product.name.toLowerCase().includes(searchLower) ||
-                product.description?.toLowerCase().includes(searchLower)
-            );
-        }
-
-        setFilteredProducts(filtered);
-    }, [categoryFilter, searchFilter]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -50,17 +23,11 @@ function Catalog() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                
-                // Cargar productos
                 const productsData = await getProducts();
                 setProducts(productsData);
-                
-                // Cargar categorías
-                const categoriesResponse = await api.get('/categories');
-                const categoriesData = categoriesResponse.data;
+                const categoriesResponse = await fetch('http://localhost:5000/api/categories');
+                const categoriesData = await categoriesResponse.json();
                 setCategories(categoriesData);
-                setFilteredProducts(productsData);
-                
                 setError(null);
             } catch (err) {
                 if (err.name !== 'AbortError') {
@@ -78,16 +45,37 @@ function Catalog() {
         };
     }, []);
 
-    // Aplicar filtros cuando cambian los parámetros de búsqueda
     useEffect(() => {
-        if (products.length > 0) {
+        if (products.length > 0 && categories.length > 0) {
             applyFilters(products, categories);
         }
-    }, [products, categories, applyFilters]);
+    }, [categoryFilter, searchFilter, products, categories]);
+
+    const applyFilters = (productsData, categoriesData) => {
+        let filtered = [...productsData];
+
+        if (categoryFilter) {
+            const category = categoriesData.find(c => 
+                c.name.toLowerCase() === categoryFilter.toLowerCase()
+            );
+            if (category) {
+                filtered = filtered.filter(p => p.category_id === category.id);
+            }
+        }
+
+        if (searchFilter) {
+            const searchLower = searchFilter.toLowerCase();
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchLower) ||
+                product.description?.toLowerCase().includes(searchLower)
+            );
+        }
+
+        setFilteredProducts(filtered);
+    };
 
     const handleSearch = () => {
         const searchTerm = searchInput.current.value.trim();
-        // Actualizar query params
         const params = {};
         if (searchTerm) params.search = searchTerm;
         if (categoryFilter) params.category = categoryFilter;
@@ -128,7 +116,6 @@ function Catalog() {
         <div>
             <h2>Catálogo de Productos</h2>
 
-            {/* Filtros */}
             <div className="filters-container">
                 <div className="search-container">
                     <input

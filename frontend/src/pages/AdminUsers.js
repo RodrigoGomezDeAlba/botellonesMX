@@ -15,21 +15,17 @@ function AdminUsers() {
     });
 
     useEffect(() => {
-        console.log('AdminUsers montado');
         loadUsers();
     }, []);
 
     const loadUsers = async () => {
         try {
             setLoading(true);
-            console.log('Cargando usuarios...');
             const data = await getUsers();
-            console.log('Usuarios recibidos:', data);
             setUsers(data);
             setError(null);
         } catch (err) {
-            console.error('Error al cargar usuarios:', err);
-            setError('Error al cargar usuarios: ' + (err.message || err.response?.data?.message));
+            setError('Error al cargar usuarios');
         } finally {
             setLoading(false);
         }
@@ -48,7 +44,6 @@ function AdminUsers() {
 
     const handleCancelEdit = () => {
         setEditingUser(null);
-        setEditForm({ name: '', email: '', role: 'user', phone: '', address: '' });
     };
 
     const handleEditChange = (e) => {
@@ -82,18 +77,6 @@ function AdminUsers() {
     if (loading) return <div className="loading">Cargando usuarios...</div>;
     if (error) return <div className="error-message">{error}</div>;
 
-    if (users.length === 0) {
-        return (
-            <div className="admin-container">
-                <div className="admin-header">
-                    <h2>Gestión de Usuarios</h2>
-                    <span className="user-count">Total: 0 usuarios</span>
-                </div>
-                <p>No hay usuarios registrados.</p>
-            </div>
-        );
-    }
-
     return (
         <div className="admin-container">
             <div className="admin-header">
@@ -113,81 +96,89 @@ function AdminUsers() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            {editingUser === user.id ? (
-                                <>
-                                    <td>{user.id}</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={editForm.name}
-                                            onChange={handleEditChange}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={editForm.email}
-                                            onChange={handleEditChange}
-                                        />
-                                    </td>
-                                    <td>
-                                        <select
-                                            name="role"
-                                            value={editForm.role}
-                                            onChange={handleEditChange}
-                                        >
-                                            <option value="user">Usuario</option>
-                                            <option value="admin">Administrador</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="phone"
-                                            value={editForm.phone}
-                                            onChange={handleEditChange}
-                                        />
-                                    </td>
-                                    <td>
-                                        <button className="btn-save" onClick={() => handleSaveEdit(user.id)}>
-                                            Guardar
-                                        </button>
-                                        <button className="btn-cancel" onClick={handleCancelEdit}>
-                                            Cancelar
-                                        </button>
-                                    </td>
-                                </>
-                            ) : (
-                                <>
-                                    <td>{user.id}</td>
-                                    <td>{user.name}</td>
-                                    <td>{user.email}</td>
-                                    <td>
-                                        <span className={`role-badge ${user.role}`}>
-                                            {user.role === 'admin' ? 'Admin' : 'Usuario'}
-                                        </span>
-                                    </td>
-                                    <td>{user.phone || '—'}</td>
-                                    <td>
-                                        <button className="btn-edit" onClick={() => handleEdit(user)}>
-                                            Editar
-                                        </button>
-                                        <button 
-                                            className="btn-delete" 
-                                            onClick={() => handleDelete(user.id, user.name)}
-                                            disabled={user.role === 'admin' && users.filter(u => u.role === 'admin').length === 1}
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </td>
-                                </>
-                            )}
+                    {users.length === 0 ? (
+                        <tr>
+                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
+                                No hay usuarios registrados
+                            </td>
                         </tr>
-                    ))}
+                    ) : (
+                        users.map(user => (
+                            <tr key={user.id}>
+                                {editingUser === user.id ? (
+                                    <>
+                                        <td>{user.id}</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                value={editForm.name}
+                                                onChange={handleEditChange}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={editForm.email}
+                                                onChange={handleEditChange}
+                                            />
+                                        </td>
+                                        <td>
+                                            <select
+                                                name="role"
+                                                value={editForm.role}
+                                                onChange={handleEditChange}
+                                            >
+                                                <option value="user">Usuario</option>
+                                                <option value="admin">Administrador</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="phone"
+                                                value={editForm.phone}
+                                                onChange={handleEditChange}
+                                            />
+                                        </td>
+                                        <td>
+                                            <button className="btn-save" onClick={() => handleSaveEdit(user.id)}>
+                                                Guardar
+                                            </button>
+                                            <button className="btn-cancel" onClick={handleCancelEdit}>
+                                                Cancelar
+                                            </button>
+                                        </td>
+                                    </>
+                                ) : (
+                                    <>
+                                        <td>{user.id}</td>
+                                        <td>{user.name}</td>
+                                        <td>{user.email}</td>
+                                        <td>
+                                            <span className={`role-badge ${user.role}`}>
+                                                {user.role === 'admin' ? 'Admin' : 'Usuario'}
+                                            </span>
+                                        </td>
+                                        <td>{user.phone || '—'}</td>
+                                        <td>
+                                            <button className="btn-edit" onClick={() => handleEdit(user)}>
+                                                Editar
+                                            </button>
+                                            <button 
+                                                className="btn-delete" 
+                                                onClick={() => handleDelete(user.id, user.name)}
+                                                disabled={user.role === 'admin' && users.filter(u => u.role === 'admin').length === 1}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </td>
+                                    </>
+                                )}
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
         </div>
