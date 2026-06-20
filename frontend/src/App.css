@@ -1656,10 +1656,11 @@ h2,
 
 .product-image {
     width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
+    height: 150px;
+    object-fit: contain;
+    padding: 12px;
     display: block;
-    background: var(--wine-100);
+    background: linear-gradient(180deg, #fff7f9, var(--wine-100));
 }
 
 .product-card:hover {
@@ -1709,11 +1710,12 @@ h2,
 
 .product-detail-image {
     width: 100%;
-    max-height: 380px;
-    object-fit: cover;
+    max-height: 300px;
+    object-fit: contain;
     border-radius: 8px;
+    padding: 16px;
     margin-bottom: 24px;
-    background: var(--wine-100);
+    background: linear-gradient(180deg, #fff7f9, var(--wine-100));
 }
 
 .footer {
