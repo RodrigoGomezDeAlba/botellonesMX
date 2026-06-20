@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
@@ -19,6 +19,31 @@ function Catalog() {
     const categoryFilter = searchParams.get('category') || '';
     const searchFilter = searchParams.get('search') || '';
 
+    const applyFilters = useCallback((productsData, categoriesData) => {
+        let filtered = [...productsData];
+
+        // Filtrar por categoría (query param)
+        if (categoryFilter) {
+            const category = categoriesData.find(c =>
+                c.name.toLowerCase() === categoryFilter.toLowerCase()
+            );
+            if (category) {
+                filtered = filtered.filter(p => p.category_id === category.id);
+            }
+        }
+
+        // Filtrar por búsqueda (query param)
+        if (searchFilter) {
+            const searchLower = searchFilter.toLowerCase();
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchLower) ||
+                product.description?.toLowerCase().includes(searchLower)
+            );
+        }
+
+        setFilteredProducts(filtered);
+    }, [categoryFilter, searchFilter]);
+
     useEffect(() => {
         const abortController = new AbortController();
 
@@ -34,9 +59,7 @@ function Catalog() {
                 const categoriesResponse = await api.get('/categories');
                 const categoriesData = categoriesResponse.data;
                 setCategories(categoriesData);
-                
-                // Aplicar filtros
-                applyFilters(productsData, categoriesData);
+                setFilteredProducts(productsData);
                 
                 setError(null);
             } catch (err) {
@@ -60,32 +83,7 @@ function Catalog() {
         if (products.length > 0) {
             applyFilters(products, categories);
         }
-    }, [categoryFilter, searchFilter]);
-
-    const applyFilters = (productsData, categoriesData) => {
-        let filtered = [...productsData];
-
-        // Filtrar por categoría (query param)
-        if (categoryFilter) {
-            const category = categoriesData.find(c => 
-                c.name.toLowerCase() === categoryFilter.toLowerCase()
-            );
-            if (category) {
-                filtered = filtered.filter(p => p.category_id === category.id);
-            }
-        }
-
-        // Filtrar por búsqueda (query param)
-        if (searchFilter) {
-            const searchLower = searchFilter.toLowerCase();
-            filtered = filtered.filter(product =>
-                product.name.toLowerCase().includes(searchLower) ||
-                product.description?.toLowerCase().includes(searchLower)
-            );
-        }
-
-        setFilteredProducts(filtered);
-    };
+    }, [products, categories, applyFilters]);
 
     const handleSearch = () => {
         const searchTerm = searchInput.current.value.trim();

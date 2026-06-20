@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getProducts, deleteProduct } from '../services/productService';
-import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 function AdminProducts() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { user } = useAuth();
 
     useEffect(() => {
         loadProducts();

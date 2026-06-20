@@ -47,6 +47,13 @@ function ProductDetail() {
         <div className="product-detail">
             <Link to="/catalog" className="back-link">← Volver al catálogo</Link>
             <div className="product-detail-card">
+                {product.image_url && (
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="product-detail-image"
+                    />
+                )}
                 <h1>{product.name}</h1>
                 <p className="detail-description">{product.description}</p>
                 <p className="detail-price">${product.price}</p>

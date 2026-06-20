@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById, createProduct, updateProduct } from '../services/productService';
 import api from '../services/api';
@@ -21,23 +21,16 @@ function ProductForm() {
     const [loading, setLoading] = useState(false);
     const [generalError, setGeneralError] = useState(null);
 
-    useEffect(() => {
-        loadCategories();
-        if (isEdit) {
-            loadProduct();
-        }
-    }, [id]);
-
-    const loadCategories = async () => {
+    const loadCategories = useCallback(async () => {
         try {
             const response = await api.get('/categories');
             setCategories(response.data);
         } catch (err) {
             setGeneralError('Error al cargar categorías');
         }
-    };
+    }, []);
 
-    const loadProduct = async () => {
+    const loadProduct = useCallback(async () => {
         try {
             const product = await getProductById(id);
             setFormData({
@@ -51,7 +44,14 @@ function ProductForm() {
         } catch (err) {
             setGeneralError('Error al cargar el producto');
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        loadCategories();
+        if (isEdit) {
+            loadProduct();
+        }
+    }, [isEdit, loadCategories, loadProduct]);
 
     const validate = () => {
         const newErrors = {};

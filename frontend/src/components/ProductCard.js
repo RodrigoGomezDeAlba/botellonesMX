@@ -5,6 +5,14 @@ import { Link } from 'react-router-dom';
 const ProductCard = React.memo(({ product, onAddToCart }) => {
     return (
         <div className="product-card">
+            {product.image_url && (
+                <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="product-image"
+                    loading="lazy"
+                />
+            )}
             <Link to={`/product/${product.id}`} className="product-link">
                 <h3>{product.name}</h3>
             </Link>
